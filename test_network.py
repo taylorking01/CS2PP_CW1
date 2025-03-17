@@ -9,7 +9,8 @@ from network import (
     edge_to_neighbour_list_1,
     edge_to_neighbour_list_2,
     inspect_node,
-    get_degree_statistics
+    get_degree_statistics,
+    get_clustering_coefficient
 )
 
 class TestFileToEdgeList(unittest.TestCase):
@@ -223,6 +224,88 @@ class TestGetDegreeStatistics(unittest.TestCase):
         expected = (0, 0, 0.0, 0)
         self.assertEqual(result, expected,
             "Empty dictionary test failed: should yield (0,0,0.0,0) if no nodes exist.")
+
+import unittest
+# We'll import get_clustering_coefficient later once implemented
+from network import get_clustering_coefficient
+
+class TestGetClusteringCoefficient(unittest.TestCase):
+    """
+    Tests for the get_clustering_coefficient function.
+    """
+
+    def test_no_neighbors(self):
+        """
+        If a node has no neighbors, the clustering coefficient should be 0.0 
+        (or potentially undefined, but here we'll expect 0.0).
+        """
+        # Node '50' has no neighbors
+        neighbour_dict = {
+            50: set()
+        }
+        result = get_clustering_coefficient(network=neighbour_dict, node=50)
+        self.assertEqual(result, 0.0, 
+            "A node with no neighbors should have a 0.0 clustering coefficient")
+
+    def test_fully_connected_neighbors(self):
+        """
+        If a node's neighbors form a complete subgraph, the clustering coefficient should be 1.0.
+        """
+        # Node 10 has neighbors 20, 30
+        # And 20, 30 are also neighbors with each other => fully connected subgraph
+        neighbour_dict = {
+            10: {20, 30},
+            20: {10, 30},
+            30: {10, 20},
+        }
+        result = get_clustering_coefficient(network=neighbour_dict, node=10)
+        self.assertEqual(result, 1.0, 
+            "Fully connected neighbors should result in a clustering coefficient of 1.0")
+
+    def test_partial_connectivity(self):
+        """
+        A node with multiple neighbors where some but not all are connected.
+        We'll use a small example where the coefficient is 0.5 or something similar.
+        """
+        # Node 1 has neighbors 2, 3, 4
+        # Among those neighbors:
+        #  2 is connected to 3
+        #  3 is connected to 2
+        #  4 is disconnected from 2 and 3
+        #
+        # k = 3 (neighbors 2, 3, 4)
+        # Among those 3 neighbors, we have 1 edge (2,3).
+        # E_N = 1
+        # So coefficient = 2*E_N / [k*(k-1)] = 2*1 / (3*2) = 2/6 = 0.3333...
+        #
+        neighbour_dict = {
+            1: {2, 3, 4},
+            2: {1, 3},
+            3: {1, 2},
+            4: {1}
+        }
+        result = get_clustering_coefficient(network=neighbour_dict, node=1)
+        # We'll allow some floating tolerance
+        self.assertAlmostEqual(result, 1/3, places=4,
+            msg="Partial connectivity among neighbors should yield ~0.3333")
+
+    def test_node_not_in_network(self):
+        """
+        If the node does not exist in the network, we might return 0.0 or raise an error.
+        We'll assume 0.0 here for convenience.
+        """
+        neighbour_dict = {
+            10: {20},
+            20: {10, 30},
+            30: {20}
+        }
+        result = get_clustering_coefficient(network=neighbour_dict, node=99)
+        self.assertEqual(result, 0.0, 
+            "Missing node in the network should yield 0.0 (or some default value).")
+
+if __name__ == "__main__":
+    unittest.main()
+
 
 if __name__ == "__main__":
     unittest.main()

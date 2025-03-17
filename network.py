@@ -139,4 +139,46 @@ def get_degree_statistics(neighbour_dict):
     most_common_deg = count.most_common(1)[0][0]
 
     return (max_degree, min_degree, avg_degree, most_common_deg)
+
+def get_clustering_coefficient(*, network, node):
+    """
+    Return the clustering coefficient for 'node' in the given neighbor-list dictionary (undirected).
+
+    The formula for clustering coefficient C for a node with k neighbors is:
+        C = (2 * E_N) / [k * (k - 1)]
+    where E_N is the number of edges among those k neighbors.
     
+    If 'node' is not in 'network' or has fewer than 2 neighbors, return 0.0.
+    """
+    # If node is missing, 0.0
+    if node not in network:
+        return 0.0
+
+    neighbors = network[node]
+    k = len(neighbors)
+    # If fewer than 2 neighbors, coefficient is 0.0 by definition
+    if k < 2:
+        return 0.0
+
+    # Count edges among neighbors (E_N)
+    # We can do this by iterating over each pair of neighbors (i, j)
+    # and checking if j is in network[i].
+    # Since it's undirected, we can treat (i, j) the same as (j, i), 
+    # so we should only count each pair once.
+    E_N = 0
+    neighbors_list = list(neighbors)  # easier to index pairs
+    for i in range(k):
+        for j in range(i+1, k):
+            n1 = neighbors_list[i]
+            n2 = neighbors_list[j]
+            # We check if n2 is in the neighbor set of n1
+            if n2 in network.get(n1, set()):
+                E_N += 1
+
+    # Now compute the coefficient
+    # (2 * E_N) / [k * (k - 1)]
+    numerator = 2 * E_N
+    denominator = k * (k - 1)
+    C = numerator / denominator
+
+    return C
