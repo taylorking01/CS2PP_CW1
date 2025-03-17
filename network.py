@@ -1,3 +1,8 @@
+#File: network.py
+#Author: Taylor King
+
+from collections import Counter
+
 def file_to_edge_list(fName):
     """
     Read a TSV file and build a list of edges.
@@ -105,4 +110,33 @@ def inspect_node(*, network, node):
                 result.append((a, b))
 
         return result
+
+def get_degree_statistics(neighbour_dict):
+    """
+    Given a neighbor list representation (dict), returns a 4-element tuple:
+    (max_degree, min_degree, average_degree, most_common_degree).
+
+    Requirements:
+    - Use built-in Python tools only, no external packages (collections is in the standard library).
+    - Use a lambda function for the average calculation.
+    - For an empty dict, return (0, 0, 0.0, 0).
+    """
+    #If empty
+    if not neighbour_dict:
+        return (0, 0, 0.0, 0)
+
+    #Calculate each node's degree
+    degrees = [len(neighbour_dict[node]) for node in neighbour_dict]
+
+    max_degree = max(degrees)
+    min_degree = min(degrees)
+    #Use a lambda for average
+    avg_func = lambda x: sum(x) / len(x)
+    avg_degree = avg_func(degrees)
+
+    #For most common degree we can use collections.Counter
+    count = Counter(degrees)
+    most_common_deg = count.most_common(1)[0][0]
+
+    return (max_degree, min_degree, avg_degree, most_common_deg)
     

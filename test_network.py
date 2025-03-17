@@ -8,7 +8,8 @@ from network import (
     file_to_edge_list,
     edge_to_neighbour_list_1,
     edge_to_neighbour_list_2,
-    inspect_node
+    inspect_node,
+    get_degree_statistics
 )
 
 class TestFileToEdgeList(unittest.TestCase):
@@ -150,6 +151,78 @@ class TestInspectNode(unittest.TestCase):
         result = inspect_node(network=neighbor_dict, node=99)
         self.assertEqual(result, set(),
                          "Missing node in a neighbor list should return an empty set")
+
+class TestGetDegreeStatistics(unittest.TestCase):
+    """
+    Tests for the get_degree_statistics function, which accepts a neighbourlist dictionary and returns (max_degree, min_degree, average_degree, most_common_degree).
+    """
+    def test_uniform_distribution(self):
+        """
+        All nodes have the same degree => max, min, average, and most common degree
+        should all be the same.
+        """
+        #Fully connected triad:
+        #Node 0 neighbors -> {1, 2}, Node 1 -> {0, 2}, Node 2 -> {0, 1}
+        #Each node has degree 2.
+        neighbour_dict = {
+            0: {1, 2},
+            1: {0, 2},
+            2: {0, 1},
+        }
+        #Should expect (2, 2, 2.0, 2)
+        result = get_degree_statistics(neighbour_dict)
+        expected = (2, 2, 2.0, 2)
+        self.assertEqual(result, expected,
+            "Uniform distribution test failed: all degrees should be 2.")
+
+    def test_varied_distribution(self):
+        """
+        Nodes have different degrees, so test that max, min, average, and most common are computed correctly.
+        """
+        #Node degrees:
+        # 10: {20, 30} => degree 2
+        # 20: {10} => degree 1
+        # 30: {10, 40, 50} => degree 3
+        # 40: {30} => degree 1
+        # 50: {30} => degree 1
+        # So degrees = [2, 1, 3, 1, 1]
+        # max=3, min=1, average= (2+1+3+1+1)/5 = 8/5=1.6, most_common_degree=1
+        neighbour_dict = {
+            10: {20, 30},
+            20: {10},
+            30: {10, 40, 50},
+            40: {30},
+            50: {30},
+        }
+        result = get_degree_statistics(neighbour_dict)
+        expected = (3, 1, 1.6, 1)
+        self.assertEqual(result, expected, "Varied distribution test failed.")
+
+    def test_single_node_no_edges(self):
+        """
+        A single node with no neighbors => degree=0.
+        So the result should be (0, 0, 0.0, 0).
+        """
+        neighbour_dict = {
+            99: set()
+        }
+        result = get_degree_statistics(neighbour_dict)
+        expected = (0, 0, 0.0, 0)
+        self.assertEqual(result, expected,
+            "Single node with no edges test failed: should yield (0,0,0.0,0).")
+
+    def test_no_nodes(self):
+        """
+        Edge case: an empty neighbor dictionary.
+        The specification doesn't say explicitly what to do here.
+        Either raise an exception or return (0,0,0.0,0).
+        Let's assume (0,0,0.0,0).
+        """
+        neighbour_dict = {}
+        result = get_degree_statistics(neighbour_dict)
+        expected = (0, 0, 0.0, 0)
+        self.assertEqual(result, expected,
+            "Empty dictionary test failed: should yield (0,0,0.0,0) if no nodes exist.")
 
 if __name__ == "__main__":
     unittest.main()
