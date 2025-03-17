@@ -48,8 +48,8 @@ class TestEdgeToNeighbourList(unittest.TestCase):
         Test both functions produce the same neighbor list on a known sample input.
         """
         edge_list = [(0, 1), (1, 2), (2, 3), (0, 3)]
-        # We'll manually define the expected neighbor list (undirected)
-        # Node 0 => {1,3}, Node 1 => {0,2}, Node 2 => {1,3}, Node 3 => {0,2}
+        #Manually define the expected neighbor list (undirected).
+        #Node 0 => {1,3}, Node 1 => {0,2}, Node 2 => {1,3}, Node 3 => {0,2}.
         expected = {
             0: {1, 3},
             1: {0, 2},
@@ -79,7 +79,7 @@ class TestEdgeToNeighbourList(unittest.TestCase):
         Ensure that if we have, say, edges among (0,1) and (2,3), no spurious connections appear.
         """
         edge_list = [(0, 1), (2, 3)]
-        # Expected neighbor list has 2 disconnected components
+        #Expected neighbor list has 2 disconnected components.
         expected = {
             0: {1},
             1: {0},
