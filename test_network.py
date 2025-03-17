@@ -4,7 +4,12 @@
 import unittest
 from unittest.mock import patch, mock_open
 
-from network import file_to_edge_list, edge_to_neighbour_list_1, edge_to_neighbour_list_2
+from network import (
+    file_to_edge_list,
+    edge_to_neighbour_list_1,
+    edge_to_neighbour_list_2,
+    inspect_node
+)
 
 class TestFileToEdgeList(unittest.TestCase):
     """
@@ -90,6 +95,61 @@ class TestEdgeToNeighbourList(unittest.TestCase):
         result_2 = edge_to_neighbour_list_2(edge_list)
         self.assertEqual(result_1, expected, "Disconnected nodes not handled correctly (method 1)")
         self.assertEqual(result_2, expected, "Disconnected nodes not handled correctly (method 2)")
+
+class TestInspectNode(unittest.TestCase):
+    """
+    Tests for the inspect_node function.
+    """
+    def test_inspect_node_edge_list(self):
+        """
+        Ensure we get the correct list of edges for a node when 'network' is an edge list.
+        """
+        # Example edge list: (10,20), (20,30), (10,40)
+        edge_list = [(10, 20), (20, 30), (10, 40)]
+        # The edges for node 10 should be [(10, 20), (10, 40)] in any order
+        expected = [(10, 20), (10, 40)]
+
+        result = inspect_node(network=edge_list, node=10)
+        self.assertEqual(sorted(result), sorted(expected),
+                         "Inspect node failed to return correct edges from edge list")
+
+    def test_inspect_node_neighbor_list(self):
+        """
+        Ensure we get the correct set of neighbors for a node when 'network' is a neighbor dictionary.
+        """
+        neighbor_dict = {
+            10: {20, 40},
+            20: {10, 30},
+            30: {20},
+            40: {10}
+        }
+        expected = {20, 40}
+
+        result = inspect_node(network=neighbor_dict, node=10)
+        self.assertEqual(result, expected,
+                         "Inspect node failed to return correct neighbors from neighbor list")
+
+    def test_inspect_node_missing_node_edge_list(self):
+        """
+        Inspect a node not present in an edge list; expect an empty list.
+        """
+        edge_list = [(1, 2), (2, 3)]
+        result = inspect_node(network=edge_list, node=99)
+        self.assertEqual(result, [],
+                         "Missing node in an edge list should return an empty list")
+
+    def test_inspect_node_missing_node_neighbor_list(self):
+        """
+        Inspect a node not present in a neighbor list; expect an empty set.
+        """
+        neighbor_dict = {
+            1: {2},
+            2: {1, 3},
+            3: {2}
+        }
+        result = inspect_node(network=neighbor_dict, node=99)
+        self.assertEqual(result, set(),
+                         "Missing node in a neighbor list should return an empty set")
 
 if __name__ == "__main__":
     unittest.main()

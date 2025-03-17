@@ -87,4 +87,22 @@ def edge_to_neighbour_list_2(edge_list):
         neighbour_dict[node] = neighbours
 
     return neighbour_dict
+
+def inspect_node(*, network, node):
+    """
+    Return a list of edges for an edge list, or a set of neighbours for a neighbour list. If the node does not exist, return an empty list/set respectively.
+    """
+
+    #Check if it is a neighbour list (a dictionary), otherwise it is an edge list.
+    if isinstance(network, dict):
+        #Return set of neighbors if node exists, else empty set
+        return network[node] if node in network else set()
+    else:
+        #It's presumably an edge list: gather edges that contain 'node'
+        result = []
+        for (a, b) in network:
+            if a == node or b == node:
+                result.append((a, b))
+
+        return result
     
