@@ -55,11 +55,10 @@ Acura,Integra,2009,Petrol,180,4,Manual,FWD,2,Performance,Compact,Coupe,31,23,150
         self.assertEqual(modified_info[3], 2, "Number of 2009 entries in modified data is incorrect")
         self.assertEqual(modified_info[4], '28000.00', "Avg Price for Impala in modified data is incorrect")
         self.assertEqual(modified_info[5], "22000.00", "Avg Price for Integra in modified data is incorrect")
-        self.assertEqual(modified_info[6], "Impala", "Model with fewest Midsize cars in modified data is incorrect")
+        self.assertEqual(modified_info[6], "Elise", "Model with fewest Midsize cars in modified data is incorrect")
 
         # The above is purely an example. You'll adjust each item to match your logic
         # & expected final transformation results.
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -109,6 +109,7 @@ def process_csv(fName):
     """
     header, rows = read_csv(fName)
     original_info = get_original_data_stats(header, rows)
+    fewest_midsize_modified = model_with_fewest_midsize(rows, header)
 
     # Step 1: Remove columns
     columns_to_remove = ["Engine Fuel Type", "Market Category", "Number of Doors", "Vehicle Size"]
@@ -129,7 +130,7 @@ def process_csv(fName):
         count_entries_from_year(rows_mod, header_mod),
         avg_msrp_by_model(rows_mod, header_mod, "Impala"),
         avg_msrp_by_model(rows_mod, header_mod, "Integra"),
-        "?"
+        fewest_midsize_modified
     ]
 
     return original_info, modified_info
