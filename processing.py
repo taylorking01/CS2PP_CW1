@@ -3,108 +3,90 @@
 
 import csv
 
-def process_csv(fName):
-    """
-    Reads the data from the specified CSV file, applies transformations, 
-    writes the modified data to cardata_modified.csv, and returns two lists
-    (original_stats, modified_stats). Each contains the required 7 pieces of 
-    information about the dataset.
-
-    Args:
-        fName (str): Path to the original CSV file, e.g. "./data/cardata.csv"
-
-    Returns:
-        tuple: (original_info, modified_info)
-               Each is a list with [num_rows, num_columns, num_unique_makes, 
-                                    num_2009_entries, average_value_impala, 
-                                    average_value_integra, model_with_fewest_midsize_cars]
-    """
-    # 1. Read the original file into a data structure (e.g., list of lists).
-    with open(fName, 'r') as f:
-        reader = csv.reader(f)
+def read_csv(fName):
+    """Reads the CSV file and returns header and data rows separately."""
+    with open(fName, 'r') as file:
+        reader = csv.reader(file)
         data = list(reader)
+    return data[0], data[1:]
 
-    #a) Number of rows = total lines - 1 (excluding header).
-    header = data[0]
-    rows = data[1:]  #Everything except the header.
-    num_rows = len(rows)
-    num_columns = len(header)
-
-    #b) Unique makes.
+def count_unique_makes(rows, header):
+    """Returns the number of unique car makes."""
     make_index = header.index("Make")
-    makes = set(row[make_index] for row in rows)
-    num_unique_makes = len(makes)
+    return len(set(row[make_index] for row in rows))
 
-    #c) Number of entries from 2009.
+def count_entries_from_year(rows, header, year="2009"):
+    """Returns the number of entries from a specific year."""
     year_index = header.index("Year")
-    num_2009 = sum(1 for row in rows if row[year_index] == "2009")
+    return sum(1 for row in rows if row[year_index] == year)
 
-    #d) Average MSRP for Impala
-    #Find all rows with Model == "Impala"
-    #Average their MSRP. The test uses "28000.00" for the mock data.
+def avg_msrp_by_model(rows, header, model_name):
+    """Returns the average MSRP for a given model name, rounded to 2 decimal places."""
     model_index = header.index("Model")
     msrp_index = header.index("MSRP")
-    
-    impala_msrp_values = []
-    integra_msrp_values = []
-    for row in rows:
-        if row[model_index] == "Impala":
-            impala_msrp_values.append(float(row[msrp_index]))
-        elif row[model_index] == "Integra":
-            integra_msrp_values.append(float(row[msrp_index]))
+    values = [float(row[msrp_index]) for row in rows if row[model_index] == model_name]
+    return round2dp(sum(values)/len(values)) if values else "0.00"
 
-    #A rounding function for 2dp rounding.
-    def round2dp(value):
-        return f"{round(value, 2):.2f}"
-
-    avg_impala = round2dp(sum(impala_msrp_values)/len(impala_msrp_values)) if impala_msrp_values else "0.00"
-    avg_integra = round2dp(sum(integra_msrp_values)/len(integra_msrp_values)) if integra_msrp_values else "0.00"
-
-    #e) Model with the fewest "Midsize" cars 
-    #The assignment’s test expects "Rio" with the mock data: 
+def model_with_fewest_midsize(rows, header):
+    """Returns the model with the fewest Midsize car entries (alphabetically first if tied)."""
     vehicle_size_index = header.index("Vehicle Size")
+    model_index = header.index("Model")
+
     model_counts = {}
     for row in rows:
-        size_val = row[vehicle_size_index]
-        if size_val == "Midsize":
-            model_val = row[model_index]
-            model_counts[model_val] = model_counts.get(model_val, 0) + 1
-
-    #If no Midsize entries exist for a model, that count is 0.
-    #Model with the *fewest* Midsize cars.
-    #Check all models that appear in the dataset.
-    #If a model never appears in Midsize, that means count=0.
-    #Define a function to get the Midsize count.
-    
-    def midsize_count(m):
-        return model_counts[m] if m in model_counts else 0
+        if row[vehicle_size_index] == "Midsize":
+            model = row[model_index]
+            model_counts[model] = model_counts.get(model, 0) + 1
 
     all_models = set(row[model_index] for row in rows)
-    # We'll pick the first model (when sorted alphabetically) with the minimal midsize_count
-    fewest_model = min(sorted(all_models), key=lambda m: midsize_count(m))
 
-    original_info = [
-        num_rows,                # # of rows
-        num_columns,            # # of columns
-        num_unique_makes,       # # of unique makes
-        num_2009,               # # of 2009 entries
-        avg_impala,             # avg MSRP for Impala
-        avg_integra,            # avg MSRP for Integra
-        fewest_model            # model with fewest midsize cars
+    #Helper function for getting midsize counts (0 if no midsize cars).
+    def midsize_count(model):
+        return model_counts.get(model, 0)
+
+    return min(sorted(all_models), key=midsize_count)
+
+def round2dp(value):
+    """Rounds a float to two decimal places as a formatted string."""
+    return f"{round(value, 2):.2f}"
+
+def get_original_data_stats(header, rows):
+    """Returns the required original dataset statistics as a list."""
+    num_rows = len(rows)
+    num_columns = len(header)
+    num_unique_makes = count_unique_makes(rows, header)
+    num_2009 = count_entries_from_year(rows, header, year="2009")
+    avg_impala = avg_msrp_by_model(rows, header, "Impala")
+    avg_integra = avg_msrp_by_model(rows, header, "Integra")
+    fewest_midsize_model = model_with_fewest_midsize(rows, header)
+
+    return [
+        num_rows,
+        num_columns,
+        num_unique_makes,
+        num_2009,
+        avg_impala,
+        avg_integra,
+        fewest_midsize_model
     ]
+    
+def process_csv(fName):
+    """
+    Main function for processing the CSV file.
+    Currently calculates only original statistics and returns placeholders for modified data.
+    """
+    header, rows = read_csv(fName)
+    original_info = get_original_data_stats(header, rows)
 
-    # 2. For now, skip transformations and just return dummy values 
-    #    that are guaranteed to fail the test portion for modified data
-    #    (like an empty row count, or placeholders).
+    #Placeholder for modified data until transformations are implemented
     modified_info = [
-        0,       # # of rows
-        0,       # # of columns
-        0,       # # of unique makes
-        0,       # # of 2009 entries
-        "0.00",  # avg price for Impala
-        "0.00",  # avg price for Integra
-        "?"      # model with fewest midsize cars
+        0,       # rows
+        0,       # columns
+        0,       # unique makes
+        0,       # 2009 entries
+        "0.00",  # avg Impala price
+        "0.00",  # avg Integra price
+        "?"      # fewest midsize cars
     ]
 
-    # We also haven't written cardata_modified.csv, which is fine for this iteration.
-    return (original_info, modified_info)
+    return original_info, modified_info
