@@ -126,7 +126,7 @@ def process_csv(fName):
         len(rows_mod),         # now should be correct (2 rows)
         len(header_mod),
         count_unique_makes(rows_mod, header_mod),
-        0,
+        count_entries_from_year(rows_mod, header_mod),
         "0.00",
         "0.00",
         "?"
