@@ -127,8 +127,8 @@ def process_csv(fName):
         len(header_mod),
         count_unique_makes(rows_mod, header_mod),
         count_entries_from_year(rows_mod, header_mod),
-        "0.00",
-        "0.00",
+        avg_msrp_by_model(rows_mod, header_mod, "Impala"),
+        avg_msrp_by_model(rows_mod, header_mod, "Integra"),
         "?"
     ]
 
