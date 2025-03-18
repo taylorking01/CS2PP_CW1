@@ -186,7 +186,7 @@ class TestGetDegreeStatistics(unittest.TestCase):
         # 30: {10, 40, 50} => degree 3
         # 40: {30} => degree 1
         # 50: {30} => degree 1
-        # So degrees = [2, 1, 3, 1, 1]
+        #So degrees = [2, 1, 3, 1, 1]
         # max=3, min=1, average= (2+1+3+1+1)/5 = 8/5=1.6, most_common_degree=1
         neighbour_dict = {
             10: {20, 30},
@@ -224,10 +224,6 @@ class TestGetDegreeStatistics(unittest.TestCase):
         expected = (0, 0, 0.0, 0)
         self.assertEqual(result, expected,
             "Empty dictionary test failed: should yield (0,0,0.0,0) if no nodes exist.")
-
-import unittest
-# We'll import get_clustering_coefficient later once implemented
-from network import get_clustering_coefficient
 
 class TestGetClusteringCoefficient(unittest.TestCase):
     """
@@ -302,10 +298,6 @@ class TestGetClusteringCoefficient(unittest.TestCase):
         result = get_clustering_coefficient(network=neighbour_dict, node=99)
         self.assertEqual(result, 0.0, 
             "Missing node in the network should yield 0.0 (or some default value).")
-
-if __name__ == "__main__":
-    unittest.main()
-
 
 if __name__ == "__main__":
     unittest.main()

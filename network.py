@@ -6,7 +6,6 @@ from collections import Counter
 def file_to_edge_list(fName):
     """
     Read a TSV file and build a list of edges.
-
     Each line in the TSV file is assumed to contain two integers (node a, node b).
     These integers will be converted into an (a, b) tuple and appended to the returned 
     list. Any blank lines are skipped.
@@ -34,7 +33,6 @@ def file_to_edge_list(fName):
 def edge_to_neighbour_list_1(edge_list):
     """
     Build a neighbor dictionary from a list of edges using a single-pass approach.
-
     For each edge (a, b) in the list, add both 'a' and 'b' to the dictionary 
     as keys (if they are not already present), then insert each one into 
     the other's set of neighbors. This version aims to be more efficient 
@@ -62,7 +60,6 @@ def edge_to_neighbour_list_1(edge_list):
 def edge_to_neighbour_list_2(edge_list):
     """
     Build a neighbor dictionary from a list of edges using a multi-pass approach.
-
     This method is intentionally less efficient. For every unique node in the 
     edge list, the algorithm scans the entire edge list to discover all edges 
     linked to that node.
@@ -75,7 +72,7 @@ def edge_to_neighbour_list_2(edge_list):
     """
     neighbour_dict = {}
 
-    #Collection of unique nodes
+    #Collection of unique nodes.
     unique_nodes = set()
     for (a, b) in edge_list:
         unique_nodes.add(a)
@@ -95,15 +92,31 @@ def edge_to_neighbour_list_2(edge_list):
 
 def inspect_node(*, network, node):
     """
-    Return a list of edges for an edge list, or a set of neighbours for a neighbour list. If the node does not exist, return an empty list/set respectively.
+    Retrieve information about a specific node in a network.
+    This function works for both edge lists and neighbor lists. If the 
+    network is an edge list (list of tuples), it returns a list of all 
+    edges that contain the specified node. If the network is a neighbor 
+    list (dictionary), it returns the set of neighbors for the node. 
+    If the node is not present in the network, it returns an empty list or set.
+
+    Args:
+        network (dict or list of tuples): The network representation, 
+            either as an adjacency dictionary (neighbor list) or an edge list.
+        node (int): The node to inspect.
+
+    Returns:
+        set or list of tuples: 
+            - If `network` is a dictionary (neighbor list), returns a set of neighbors.
+            - If `network` is a list of edges, returns a list of edge tuples where the node appears.
+            - If `node` is not found in `network`, returns an empty set or list.
     """
 
     #Check if it is a neighbour list (a dictionary), otherwise it is an edge list.
     if isinstance(network, dict):
-        #Return set of neighbors if node exists, else empty set
+        #Return set of neighbors if node exists, otherwise an empty set is returned.
         return network[node] if node in network else set()
     else:
-        #It's presumably an edge list: gather edges that contain 'node'
+        #Meaning an edge list: gather edges that contain 'node'.
         result = []
         for (a, b) in network:
             if a == node or b == node:
@@ -113,19 +126,29 @@ def inspect_node(*, network, node):
 
 def get_degree_statistics(neighbour_dict):
     """
-    Given a neighbor list representation (dict), returns a 4-element tuple:
-    (max_degree, min_degree, average_degree, most_common_degree).
+    Compute degree-related statistics from a neighbor list.
+    Given a network represented as a dictionary where each node maps to 
+    a set of its neighbors, this function calculates key statistics about 
+    the node degrees.
 
-    Requirements:
-    - Use built-in Python tools only, no external packages (collections is in the standard library).
-    - Use a lambda function for the average calculation.
-    - For an empty dict, return (0, 0, 0.0, 0).
+    Args:
+        neighbour_dict (dict): A dictionary where keys are nodes and 
+            values are sets of neighboring nodes.
+
+    Returns:
+        tuple: A 4-element tuple containing:
+            - max_degree (int): The highest degree among nodes.
+            - min_degree (int): The lowest degree among nodes.
+            - average_degree (float): The average degree across all nodes.
+            - most_common_degree (int): The most frequently occurring degree.
+        
+        If `neighbour_dict` is empty, returns (0, 0, 0.0, 0).
     """
     #If empty
     if not neighbour_dict:
         return (0, 0, 0.0, 0)
 
-    #Calculate each node's degree
+    #Calculate each node's degree.
     degrees = [len(neighbour_dict[node]) for node in neighbour_dict]
 
     max_degree = max(degrees)
@@ -134,7 +157,7 @@ def get_degree_statistics(neighbour_dict):
     avg_func = lambda x: sum(x) / len(x)
     avg_degree = avg_func(degrees)
 
-    #For most common degree we can use collections.Counter
+    #For most common degree we can use collections.Counter.
     count = Counter(degrees)
     most_common_deg = count.most_common(1)[0][0]
 
@@ -142,29 +165,39 @@ def get_degree_statistics(neighbour_dict):
 
 def get_clustering_coefficient(*, network, node):
     """
-    Return the clustering coefficient for 'node' in the given neighbor-list dictionary (undirected).
+    Compute the clustering coefficient for a given node.
+    The clustering coefficient quantifies how connected a node's neighbors 
+    are to each other. It is calculated as:
 
-    The formula for clustering coefficient C for a node with k neighbors is:
         C = (2 * E_N) / [k * (k - 1)]
-    where E_N is the number of edges among those k neighbors.
+
+    where:
+        - E_N is the number of edges among the node's k neighbors.
+        - k is the number of neighbors (degree of the node).
     
-    If 'node' is not in 'network' or has fewer than 2 neighbors, return 0.0.
+    If the node has fewer than 2 neighbors, the clustering coefficient is 0.0.
+
+    Args:
+        network (dict): A dictionary where each node maps to a set of its neighbors.
+        node (int): The node for which to calculate the clustering coefficient.
+
+    Returns:
+        float: The clustering coefficient for the node (between 0.0 and 1.0).
+            Returns 0.0 if the node is missing or has fewer than 2 neighbors.
     """
-    # If node is missing, 0.0
+    # If node is missing, 0.0.
     if node not in network:
         return 0.0
 
     neighbors = network[node]
     k = len(neighbors)
-    # If fewer than 2 neighbors, coefficient is 0.0 by definition
+    #If fewer than 2 neighbors, coefficient is 0.0.
     if k < 2:
         return 0.0
 
-    # Count edges among neighbors (E_N)
-    # We can do this by iterating over each pair of neighbors (i, j)
-    # and checking if j is in network[i].
-    # Since it's undirected, we can treat (i, j) the same as (j, i), 
-    # so we should only count each pair once.
+    #Count edges among neighbors (E_N).
+    #This can be done by iterating over each pair of neighbors (i, j) and checking if j is in network[i].
+    #Since it's undirected, we can treat (i, j) the same as (j, i), so we should only count each pair once.
     E_N = 0
     neighbors_list = list(neighbors)  # easier to index pairs
     for i in range(k):
