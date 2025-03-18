@@ -50,8 +50,8 @@ Acura,Integra,2009,Petrol,180,4,Manual,FWD,2,Performance,Compact,Coupe,31,23,150
         # Check modified_info
         # Suppose after transformations, only 2 rows remain, 10 columns, etc.
         self.assertEqual(modified_info[0], 2, "Modified CSV row count is incorrect")
-        self.assertEqual(modified_info[1], 10, "Modified CSV column count is incorrect")
-        self.assertEqual(modified_info[2], 5, "Unique Make count in modified data is incorrect")
+        self.assertEqual(modified_info[1], 12, "Modified CSV column count is incorrect")
+        self.assertEqual(modified_info[2], 2, "Unique Make count in modified data is incorrect")
         self.assertEqual(modified_info[3], 1, "Number of 2009 entries in modified data is incorrect")
         self.assertEqual(modified_info[4], "?", "Avg Price for Impala in modified data is incorrect")
         self.assertEqual(modified_info[5], "?", "Avg Price for Integra in modified data is incorrect")

@@ -69,6 +69,38 @@ def get_original_data_stats(header, rows):
         avg_integra,
         fewest_midsize_model
     ]
+
+###Remove columns###
+def remove_columns(header, rows, columns_to_remove):
+    """Removes specified columns from header and rows."""
+    #Determine column indices to keep.
+    indices_to_keep = [i for i, col in enumerate(header) if col not in columns_to_remove]
+
+    #Filter the header and rows.
+    new_header = [header[i] for i in indices_to_keep]
+    new_rows = [[row[i] for i in indices_to_keep] for row in rows]
+
+    return new_header, new_rows
+
+###Remove rows###
+def remove_rows_by_make(rows, header, makes_to_remove):
+    """Removes rows containing any of the specified Makes."""
+    make_index = header.index("Make")
+    return [row for row in rows if row[make_index] not in makes_to_remove]
+
+###Remove dupes###
+def remove_duplicates(rows):
+    """Removes duplicate rows."""
+    unique_rows = []
+    seen_rows = set()
+
+    for row in rows:
+        row_tuple = tuple(row)
+        if row_tuple not in seen_rows:
+            seen_rows.add(row_tuple)
+            unique_rows.append(row)
+
+    return unique_rows
     
 def process_csv(fName):
     """
@@ -78,15 +110,26 @@ def process_csv(fName):
     header, rows = read_csv(fName)
     original_info = get_original_data_stats(header, rows)
 
-    #Placeholder for modified data until transformations are implemented
+    # Step 1: Remove columns
+    columns_to_remove = ["Engine Fuel Type", "Market Category", "Number of Doors", "Vehicle Size"]
+    header_mod, rows_mod = remove_columns(header, rows, columns_to_remove)
+
+    # Step 2: Remove specified Makes (Ford, Kia, Lotus)
+    makes_to_remove = ["Ford", "Kia", "Lotus"]
+    rows_mod = remove_rows_by_make(rows_mod, header_mod, makes_to_remove)
+
+    # Step 3: Remove duplicates
+    rows_mod = remove_duplicates(rows_mod)
+
+    # Temporarily returning modified stats as placeholder values
     modified_info = [
-        0,       # rows
-        0,       # columns
-        0,       # unique makes
-        0,       # 2009 entries
-        "0.00",  # avg Impala price
-        "0.00",  # avg Integra price
-        "?"      # fewest midsize cars
+        len(rows_mod),         # now should be correct (2 rows)
+        len(header_mod),
+        count_unique_makes(rows_mod, header_mod),
+        0,
+        "0.00",
+        "0.00",
+        "?"
     ]
 
     return original_info, modified_info
