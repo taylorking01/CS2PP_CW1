@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year
 )
 
 # from processing import (
@@ -122,7 +122,7 @@ class TestProcessing(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_round_price(self):
-        # Test rounding of Price to the nearest $100.
+        #Test rounding of Price to the nearest $100 using round_price method.
         data = [{'Price': '91449'}, {'Price': '91950'}, {'Price': '10999'}]
         result = round_price(data, 'Price')
         expected = [
@@ -132,7 +132,12 @@ class TestProcessing(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
     
-
+    def test_filter_year(self):
+        #Test the filtering of rows based on year greater than threshold using filter_year method.
+        data = [{'Year': '1999'}, {'Year': '2001'}, {'Year': '2000'}]
+        result = filter_year(data, 'Year', year_threshold=2000)
+        expected = [{'Year': '2001'}]
+        self.assertEqual(result, expected)
 
 
 

@@ -131,6 +131,12 @@ def round_price(data: List[Dict[str, str]], price_key: str) -> List[Dict[str, st
         row[price_key] = str(int(round(price, -2)))
     return data
 
+#Filter Year method
+"""
+Keeps only rows from the dataset where the 'Year' is greater than the specified threshold (default is 2000).
+"""
+def filter_year(data: List[Dict[str, str]], year_key: str, year_threshold: int = 2000) -> List[Dict[str, str]]:
+    return [row for row in data if int(row[year_key]) > year_threshold]
 
 
 
