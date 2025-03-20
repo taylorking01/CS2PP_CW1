@@ -17,6 +17,7 @@ class Tournament:
         :type config_path: str
         :raises TypeError: If 'nteams' is not an integer.
         :raises AssertionError: If 'nteams' is not positive and non-zero.
+        :raises AssertionError: If 'nteams' is not a power of two.
         """
         with open(config_path, 'r') as f:
             config = json.load(f)
@@ -32,7 +33,10 @@ class Tournament:
 
         #Validate that nteams is positive and non-zero integer.
         assert self.nteams > 0, "Number of teams must be positive and non-zero."
-        
+
+        # Validate that nteams is a power of two
+        assert (self.nteams & (self.nteams - 1) == 0), "Number of teams must be a power of two."
+
         self.default_low = config['default_low']
         self.default_high = config['default_high']
         self.default_incr = config['default_incr']

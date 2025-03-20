@@ -99,7 +99,47 @@ def test_nteams_positive_nonzero():
 
     print("nteams positive, non-zero assertion tests passed.")
 
+def test_nteams_power_of_two():
+    """
+    Test Tournament initialisation with nteams not being a power of two to ensure AssertionError is raised appropriately.
+    """
+    print("Running Tournament nteams power-of-two assertion test...")
+
+    invalid_configs = [
+        {"nteams": 3, "description": "not a power of 2 (3)"},
+        {"nteams": 12, "description": "not a power of 2 (12)"},
+        {"nteams": 7, "description": "not a power of 2 (7)"}
+    ]
+
+    for config_case in invalid_configs:
+        #.Prepare invalid config data.
+        invalid_config = {
+            "car_data_path": "./data/cars_modified.csv",
+            "tournament_name": f"Invalid {config_case['description']} Tournament",
+            "nteams": config_case["nteams"],
+            "default_low": 10000,
+            "default_high": 50000,
+            "default_incr": 5000
+        }
+
+        #Write temporary invalid config file.
+        invalid_config_path = f"./data/invalid_{config_case['description']}_config.json"
+        with open(invalid_config_path, 'w') as f:
+            json.dump(invalid_config, f)
+
+        try:
+            #Attempt to create Tournament with invalid nteams.
+            Tournament(invalid_config_path)
+            assert False, f"AssertionError was expected but not raised for {config_case['description']}."
+        except AssertionError as e:
+            assert str(e) == "Number of teams must be a power of two.", "Incorrect assertion message."
+            print(f"Correctly caught assertion for {config_case['description']}.")
+
+    print("nteams power-of-two assertion tests passed.")
+
+
 if __name__ == '__main__':
     test_init()
     test_nteams_integer()
     test_nteams_positive_nonzero()
+    test_nteams_power_of_two()
