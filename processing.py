@@ -103,6 +103,24 @@ def add_hp_type_column(data: List[Dict[str, str]], hp_key: str) -> List[Dict[str
         row['HP_Type'] = 'high' if int(row[hp_key]) >= 300 else 'low'
     return data
 
+#Add Price_class column method
+"""
+Adds a new column 'Price_class' categorizing price as:
+    'high' if Price >= 50000
+    'mid' if 30000 <= Price < 50000
+    'low' if Price < 30000
+"""
+def add_price_class_column(data: List[Dict[str, str]], price_key: str) -> List[Dict[str, str]]:
+    for row in data:
+        price = int(row[price_key])
+        if price >= 50000:
+            row['Price_class'] = 'high'
+        elif 30000 <= price < 50000:
+            row['Price_class'] = 'mid'
+        else:
+            row['Price_class'] = 'low'
+    return data
+
 
 
 

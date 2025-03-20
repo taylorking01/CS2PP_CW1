@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column
 )
 
 # from processing import (
@@ -110,7 +110,17 @@ class TestProcessing(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
     
-    
+    def test_add_price_class_column(self):
+        #Test the success of categorization of price into Price_class using add_price_class_column method.
+        data = [{'Price': '50000'}, {'Price': '40000'}, {'Price': '29999'}]
+        result = add_price_class_column(data, 'Price')
+        expected = [
+            {'Price': '50000', 'Price_class': 'high'},
+            {'Price': '40000', 'Price_class': 'mid'},
+            {'Price': '29999', 'Price_class': 'low'}
+        ]
+        self.assertEqual(result, expected)
+
 
 
 
