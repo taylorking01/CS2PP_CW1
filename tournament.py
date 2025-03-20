@@ -236,8 +236,28 @@ class Tournament:
                 team.budget -= car['Cost']
                 return  #**Fix: Ensure only ONE purchase is made.**
 
-
+    def show_win_record(self):
+        """
+        Prints the win-loss record for each team in the tournament.
+        """
+        print("\nTournament Win-Loss Record:\n")
+        
+        #Record win/loss for each team.
+        record = {team.sponsor: [] for team in self.teams}
+        rounds = len(bin(self.nteams)) - 3  # Number of rounds (log2(nteams))
     
+        for r in range(rounds):
+            for team in self.teams:
+                if team.performance['wins'] > r:
+                    record[team.sponsor].append('W     ')
+                elif team.performance['losses'] > r:
+                    record[team.sponsor].append('L     ')
+    
+        #Print results with proper alignment.
+        max_len = max(len(team.sponsor) for team in self.teams)
+        for sponsor, results in record.items():
+            print(f"{sponsor.rjust(max_len)}: {results}")
+
     class Team:
         """
         Represents a single competing team with sponsor, budget, inventory, active status, and performance record.
