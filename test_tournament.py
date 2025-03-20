@@ -255,6 +255,35 @@ def test_team_object():
 
     print("Internal Team class tests passed.")
 
+def test_buy_cars():
+    """
+    Test buy_cars method to ensure it correctly calls _purchase_inventory for each team.
+    """
+    print("Running buy_cars method test...")
+
+    #Setup Tournament and generate teams.
+    tournament = Tournament('./data/config.json')
+    tournament.generate_sponsors()
+    tournament.generate_teams()
+
+    #Create a mock _purchase_inventory method to track calls.
+    called_teams = []
+
+    def mock_purchase_inventory(team):
+        called_teams.append(team.sponsor)
+
+    #Replace the original method with mock.
+    tournament._purchase_inventory = mock_purchase_inventory
+
+    #Call buy_cars.
+    tournament.buy_cars()
+
+    #Ensure _purchase_inventory was called for each team.
+    assert len(called_teams) == tournament.nteams, "Not all teams had _purchase_inventory called."
+    assert set(called_teams) == set(tournament.sponsors), "_purchase_inventory was not called correctly for each team."
+
+    print("buy_cars method test passed.")
+
 
 if __name__ == '__main__':
     test_init()
@@ -265,4 +294,4 @@ if __name__ == '__main__':
     test_generate_sponsors()
     test_generate_teams()
     test_team_object()
-
+    test_buy_cars()

@@ -113,6 +113,19 @@ class Tournament:
             team = self.Team(sponsor, budget)
             self.teams.append(team)
 
+    def buy_cars(self):
+        """
+        Allows each team to purchase their initial inventory.
+        """
+        for team in self.teams:
+            self._purchase_inventory(team)
+
+    def _purchase_inventory(self, team):
+        """
+        Placeholder method to handle purchasing cars for a team. Implementation will be provided later.
+        """
+        pass
+    
     class Team:
         """
         Represents a single competing team with sponsor, budget, inventory, active status, and performance record.
