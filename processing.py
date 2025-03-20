@@ -71,6 +71,18 @@ def rename_columns(data: List[Dict[str, str]], renaming_map: Dict[str, str]) -> 
         renamed_data.append(renamed_row)
     return renamed_data
 
+#Replace missing HP with median method
+"""
+Finds missing ('') values in the specified HP column and replaces them with the median of all existing HP values.
+"""
+def replace_missing_hp_with_median(data: List[Dict[str, str]], hp_key: str) -> List[Dict[str, str]]:
+    hp_values = sorted([int(row[hp_key]) for row in data if row[hp_key].isdigit()])
+    median_hp = hp_values[len(hp_values)//2] if len(hp_values) % 2 else (hp_values[len(hp_values)//2 - 1] + hp_values[len(hp_values)//2]) // 2
+
+    for row in data:
+        if not row[hp_key].isdigit():
+            row[hp_key] = str(median_hp)
+    return data
 
 
 

@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median
 )
 
 # from processing import (
@@ -55,7 +55,7 @@ class TestProcessing(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_rename_columns(self):
-        # Test the renaming of column headers.
+        #Test the renaming of column headers using the rename_columns method.
         data = [
             {'Make': 'Toyota', 'Model': 'Aygo'},
             {'Make': 'KTM', 'Model': 'X-bow'}
@@ -73,6 +73,20 @@ class TestProcessing(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
 
+    def test_replace_missing_hp_with_median(self):
+        #Test replacing missing HP values with median HP using replace_missing_hp_with_median method.
+        data = [
+            {'HP': '300'}, 
+            {'HP': ''}, 
+            {'HP': '100'}
+        ]
+        result = replace_missing_hp_with_median(data, 'HP')
+        expected = [
+            {'HP': '300'},
+            {'HP': '200'},  # median of [100,300] is 200
+            {'HP': '100'}
+        ]
+        self.assertEqual(result, expected)
 
 if __name__ == '__main__':
     unittest.main()
