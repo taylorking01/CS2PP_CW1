@@ -1,6 +1,37 @@
 #File: processing.py
 #Author: Taylor King
+#Description:
+#  Data Structures:
+#    The CSV data is read into a list of dictionaries, 
+#    where each dictionary represents a row with keys as column headers and corresponding data as values.
+#    [
+#      {"Make": "Lamborghini", "Model": "Adventador", "Year": "2015", "Price": "300000"},
+#      {"Make": "Toyota", "Model": "Aygo", "Year": "2014", "Price": "3000"},
+#      ...
+#    ]
 
+import csv
+from typing import List, Dict, Tuple, Any
+
+#Read CSV method
+"""
+Reads the csv into a list of dictionaries, each dictionary representing a row where the keys are the column headers.
+"""
+def read_csv(filepath: str) -> List[Dict[str, str]]:
+    with open(filepath, mode='r', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        data = [row for row in reader]
+    return data
+
+#Remove Columns method
+"""
+Removes specified columns from each dictionary (row) within the data list.
+"""
+def remove_columns(data: List[Dict[str, str]], columns_to_remove: List[str]) -> List[Dict[str, str]]:
+    return [
+        {key: value for key, value in row.items() if key not in columns_to_remove}
+        for row in data
+    ]
 
 
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:

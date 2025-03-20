@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv
+    read_csv, remove_columns
 )
 
 # from processing import (
@@ -16,11 +16,17 @@ from processing import (
 class TestProcessing(unittest.TestCase):
 
     def test_read_csv(self):
-        # Test file reading functionality
+        #Test file reading functionality using the read_csv method.
         data = read_csv('./data/cardata.csv')
         self.assertIsInstance(data, list)
         self.assertGreater(len(data), 0)
         self.assertIsInstance(data[0], dict)
+
+    def test_remove_columns(self):
+        #Test the success of removing a column using the remove_column method.
+        data = [{'A': '1', 'B': '2', 'C': '3'}]
+        result = remove_columns(data, ['B'])
+        self.assertEqual(result, [{'A': '1', 'C': '3'}])
 
 if __name__ == '__main__':
     unittest.main()
