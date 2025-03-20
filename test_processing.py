@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns
+    read_csv, remove_columns, remove_makes
 )
 
 # from processing import (
@@ -24,9 +24,21 @@ class TestProcessing(unittest.TestCase):
 
     def test_remove_columns(self):
         #Test the success of removing a column using the remove_column method.
-        data = [{'A': '1', 'B': '2', 'C': '3'}]
-        result = remove_columns(data, ['B'])
-        self.assertEqual(result, [{'A': '1', 'C': '3'}])
+        data = [{'ColA': 'Val1', 'ColB': 'Val2', 'ColC': 'Val3'}]
+        result = remove_columns(data, ['ColB'])
+        self.assertEqual(result, [{'ColA': 'Val1', 'ColC': 'Val3'}])
+
+    def test_remove_makes(self):
+        #Test the removal of entries based upon specified car makes using the remove_makes method.
+        data = [
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': 'BMW', 'Model': 'i8'},
+            {'Make': 'Toyota', 'Model': 'Prius'},
+            {'Make': 'KTM', 'Model': 'X-bow'}
+        ]
+        result = remove_makes(data, ['Toyota', 'BMW'])
+        self.assertEqual(result, [{'Make': 'KTM', 'Model': 'X-bow'}])
+
 
 if __name__ == '__main__':
     unittest.main()

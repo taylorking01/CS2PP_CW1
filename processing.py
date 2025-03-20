@@ -33,6 +33,14 @@ def remove_columns(data: List[Dict[str, str]], columns_to_remove: List[str]) -> 
         for row in data
     ]
 
+#Remove Makes method
+"""
+Removes entries from the dataset where 'Make' matches any of those listed in makes_to_remove.
+"""
+def remove_makes(data: List[Dict[str, str]], makes_to_remove: List[str]) -> List[Dict[str, str]]:
+    return [
+        row for row in data if row.get('Make') not in makes_to_remove
+    ]
 
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:
 
