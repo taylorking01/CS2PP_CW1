@@ -152,6 +152,40 @@ def filter_make_counts(data: List[Dict[str, str]], make_key: str, min_count: int
         if min_count < make_frequency[row[make_key]] < max_count
     ]
 
+#Compute Summary method
+"""
+Returns a list containing summary statistics from the dataset:
+    [Number of rows, Number of columns, Number of unique Makes, Number of entries from 2009,
+     Average price of 'Impala' cars, Average price of 'Integra' cars,
+     Model with the fewest 'Midsize' cars.]
+"""
+def compute_summary(data: List[Dict[str, str]], price_key: str) -> List[Any]:
+    num_rows = len(data)
+    num_cols = len(data[0]) if data else 0
+    unique_makes = len(set(row['Make'] for row in data))
+    entries_2009 = sum(1 for row in data if row['Year'] == '2009')
+
+    def avg_price(model_name: str) -> str:
+        prices = [int(row[price_key]) for row in data if row['Model'] == model_name]
+        if prices:
+            avg = round(sum(prices) / len(prices), 2)
+            return f"{avg:.2f}"
+        return "0.00"
+
+    impala_avg = avg_price('Impala')
+    integra_avg = avg_price('Integra')
+
+    midsize_counts = {}
+    for row in data:
+        if row.get('Vehicle Style') == 'Midsize':
+            model = row['Model']
+            midsize_counts[model] = midsize_counts.get(model, 0) + 1
+
+    fewest_midsize_model = min(midsize_counts, key=midsize_counts.get) if midsize_counts else ""
+
+    return [num_rows, num_cols, unique_makes, entries_2009, impala_avg, integra_avg, fewest_midsize_model]
+
+
 
 
 

@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts, compute_summary
 )
 
 # from processing import (
@@ -161,7 +161,32 @@ class TestProcessing(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
     
-
+    def test_compute_summary(self):
+        #Test the summary computation from dataset using compute_summary method.
+        data = [
+            {'Make': 'Chevrolet', 'Model': 'Impala', 'Year': '2009', 'Price': '28000', 'Vehicle Style': 'Midsize'},
+            {'Make': 'Chevrolet', 'Model': 'Impala', 'Year': '2010', 'Price': '32000', 'Vehicle Style': 'Midsize'},
+            {'Make': 'Acura', 'Model': 'Integra', 'Year': '2001', 'Price': '22000', 'Vehicle Style': 'Compact'},
+            {'Make': 'Acura', 'Model': 'Integra', 'Year': '2009', 'Price': '24000', 'Vehicle Style': 'Compact'},
+            {'Make': 'Toyota', 'Model': 'Camry', 'Year': '2009', 'Price': '25000', 'Vehicle Style': 'Midsize'},
+            {'Make': 'Toyota', 'Model': 'Camry', 'Year': '2009', 'Price': '26000', 'Vehicle Style': 'Midsize'},
+            {'Make': 'Ford', 'Model': 'Focus', 'Year': '2009', 'Price': '19000', 'Vehicle Style': 'Compact'}
+        ]
+        
+        result = compute_summary(data, 'Price')
+        
+        expected = [
+            7,          #total rows
+            5,          #total columns (Make, Model, Year, Price, Vehicle Style)
+            4,          #unique makes (Chevrolet, Acura, Toyota, Ford)
+            5,          #entries from 2009
+            "30000.00", #avg price Impala (28000+32000)/2 = 30000
+            "23000.00", #avg price Integra (22000+24000)/2 = 23000
+            "Impala"    #fewest midsize cars: Impala (2), Camry(2), tie - Impala appears first
+        ]
+    
+        self.assertEqual(result, expected)
+    
 
 
 
