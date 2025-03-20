@@ -185,6 +185,17 @@ def compute_summary(data: List[Dict[str, str]], price_key: str) -> List[Any]:
 
     return [num_rows, num_cols, unique_makes, entries_2009, impala_avg, integra_avg, fewest_midsize_model]
 
+#Write CSV method
+"""
+Writes the dataset (list of dictionaries) into a CSV file at the given filepath.
+The provided headers determine the order of columns.
+"""
+def write_csv(filepath: str, data: List[Dict[str, str]], headers: List[str]) -> None:
+    with open(filepath, mode='w', encoding='utf-8', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(data)
+
 #Process CSV method.
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:
 

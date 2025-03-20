@@ -2,8 +2,9 @@
 #Author: Taylor King
 
 import unittest
+import os
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts, compute_summary
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts, compute_summary, write_csv
 )
 
 # from processing import (
@@ -186,7 +187,36 @@ class TestProcessing(unittest.TestCase):
         ]
     
         self.assertEqual(result, expected)
+
+    def test_write_csv(self):
+        #Test writing a CSV file from data using the write_csv method.
+        test_filepath = './data/test_output.csv'
+        data = [
+            {'Make': 'BMW', 'Model': 'X5', 'Price': '50000'},
+            {'Make': 'Audi', 'Model': 'A4', 'Price': '40000'}
+        ]
+        headers = ['Make', 'Model', 'Price']
     
+        write_csv(test_filepath, data, headers)
+    
+        #Verify the file exists and content matches.
+        self.assertTrue(os.path.exists(test_filepath))
+    
+        with open(test_filepath, mode='r', encoding='utf-8') as file:
+            lines = file.readlines()
+    
+        expected_lines = [
+            'Make,Model,Price\n',
+            'BMW,X5,50000\n',
+            'Audi,A4,40000\n'
+        ]
+    
+        self.assertEqual(lines, expected_lines)
+    
+        #Cleanup
+        os.remove(test_filepath)
+    
+        
 
 
 
