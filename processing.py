@@ -138,6 +138,20 @@ Keeps only rows from the dataset where the 'Year' is greater than the specified 
 def filter_year(data: List[Dict[str, str]], year_key: str, year_threshold: int = 2000) -> List[Dict[str, str]]:
     return [row for row in data if int(row[year_key]) > year_threshold]
 
+#Filter Make Counts method
+"""
+Keeps only entries whose car makes occur more than min_count and less than max_count times in the dataset.
+"""
+def filter_make_counts(data: List[Dict[str, str]], make_key: str, min_count: int, max_count: int) -> List[Dict[str, str]]:
+    make_frequency = {}
+    for row in data:
+        make_frequency[row[make_key]] = make_frequency.get(row[make_key], 0) + 1
+
+    return [
+        row for row in data
+        if min_count < make_frequency[row[make_key]] < max_count
+    ]
+
 
 
 

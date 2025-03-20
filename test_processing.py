@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts
 )
 
 # from processing import (
@@ -138,6 +138,29 @@ class TestProcessing(unittest.TestCase):
         result = filter_year(data, 'Year', year_threshold=2000)
         expected = [{'Year': '2001'}]
         self.assertEqual(result, expected)
+
+    def test_filter_make_counts(self):
+        #Test the filtering based on the frequency of car makes using filter make counts method.
+        data = [
+            {'Make': 'KTM X-Bow'}, {'Make': 'KTM X-Bow'}, {'Make': 'KTM X-Bow'},  #3 KTM X-Bows
+            {'Make': 'Lamborghini'}, {'Make': 'Lamborghini'},                    #2 Lamborghinis
+            {'Make': 'Bugatti'},                                                 # 1Bugatti
+            {'Make': 'Honda'}, {'Make': 'Honda'}, {'Make': 'Honda'}, {'Make': 'Honda'}  # 4Hondas
+        ]
+        result = filter_make_counts(data, 'Make', min_count=1, max_count=4)
+        
+        #Frequencies:
+        #KTM X-Bow: 3
+        #Lamborghini: 2
+        #Bugatti: 1 (excluded, frequency not > min_count)
+        #Honda: 4 (excluded, frequency not < max_count)
+    
+        expected = [
+            {'Make': 'KTM X-Bow'}, {'Make': 'KTM X-Bow'}, {'Make': 'KTM X-Bow'},
+            {'Make': 'Lamborghini'}, {'Make': 'Lamborghini'}
+        ]
+        self.assertEqual(result, expected)
+    
 
 
 
