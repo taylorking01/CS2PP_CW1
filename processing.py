@@ -42,6 +42,23 @@ def remove_makes(data: List[Dict[str, str]], makes_to_remove: List[str]) -> List
         row for row in data if row.get('Make') not in makes_to_remove
     ]
 
+#Remove Duplicates method
+"""
+Removes duplicate rows from the dataset. A row is considered duplicate if all key-value pairs are identical.
+"""
+def remove_duplicates(data: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    seen = set()
+    unique_data = []
+    for row in data:
+        #Convert dictionary into a tuple of sorted items to ensure consistent ordering for hashing
+        row_tuple = tuple(sorted(row.items()))
+        if row_tuple not in seen:
+            seen.add(row_tuple)
+            unique_data.append(row)
+    return unique_data
+
+
+
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:
 
     #Prep: Read in the data and compute the summary.

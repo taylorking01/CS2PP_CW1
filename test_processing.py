@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes
+    read_csv, remove_columns, remove_makes, remove_duplicates
 )
 
 # from processing import (
@@ -39,6 +39,20 @@ class TestProcessing(unittest.TestCase):
         result = remove_makes(data, ['Toyota', 'BMW'])
         self.assertEqual(result, [{'Make': 'KTM', 'Model': 'X-bow'}])
 
+    def test_remove_duplicates(self):
+        #Test the removal of duplicate entries from dataset using remove_duplicates method.
+        data = [
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': 'Toyota', 'Model': 'Prius'},
+            {'Make': 'Toyota', 'Model': 'Aygo'}
+        ]
+        result = remove_duplicates(data)
+        expected = [
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': 'Toyota', 'Model': 'Prius'}
+        ]
+        self.assertEqual(result, expected)
 
 if __name__ == '__main__':
     unittest.main()
