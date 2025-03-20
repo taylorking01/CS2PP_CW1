@@ -36,7 +36,7 @@ class Tournament:
         #Validate that nteams is positive and non-zero integer.
         assert self.nteams > 0, "Number of teams must be positive and non-zero."
 
-        # Validate that nteams is a power of two
+        #Validate that nteams is a power of two.
         assert (self.nteams & (self.nteams - 1) == 0), "Number of teams must be a power of two."
 
         self.default_low = config['default_low']
@@ -151,6 +151,92 @@ class Tournament:
             if car['Cost'] <= team.budget:
                 team.inventory.append(car['Model'])
                 team.budget -= car['Cost'] #Clearly update budget.
+
+    def hold_event(self):
+        """
+        Runs the tournament event through pairwise matches until one champion remains.
+        Each winner receives a £50,000 prize after match victory and immediately buys one additional car.
+        """
+        active_teams = self.teams.copy()
+    
+        #Loop until one champion remains.
+        while len(active_teams) > 1:
+            next_round_teams = []
+    
+            #Pairwise matchups.
+            for i in range(0, len(active_teams), 2):
+                team_a = active_teams[i]
+                team_b = active_teams[i+1]
+    
+                #Calculate total MPG-H clearly.
+                mpg_a = self._team_total_mpg(team_a)
+                mpg_b = self._team_total_mpg(team_b)
+    
+                #Decide match winner clearly.
+                winner, loser = (team_a, team_b) if mpg_a >= mpg_b else (team_b, team_a)
+    
+                #Update performance clearly.
+                winner.performance['wins'] += 1
+                loser.performance['losses'] += 1
+                winner.performance['scores'].append(max(mpg_a, mpg_b))
+                loser.active = False #Eliminated clearly.
+    
+                #Award prize money clearly.
+                winner.budget += 50000
+    
+                #Winner buys exactly one additional car (clearly enforced).
+                self._purchase_single_car(winner)
+    
+                #Advance winner clearly.
+                next_round_teams.append(winner)
+    
+            active_teams = next_round_teams
+    
+        #Clearly record the final champion.
+        self.champion = active_teams[0]
+    
+    def _team_total_mpg(self, team):
+        """
+        Calculates total MPG-H for all cars in team's inventory.
+        """
+        total_mpg = 0
+        with open(self.car_data_path, 'r') as f:
+            reader = csv.DictReader(f)
+            car_mpg = {row['Model']: int(row['MPG-H']) for row in reader}
+    
+        for car in team.inventory:
+            total_mpg += car_mpg.get(car, 0)
+    
+        return total_mpg
+    
+    def _purchase_single_car(self, team):
+        """
+        Purchases exactly one car after winning, clearly following the greedy method.
+        """
+        available_cars = []
+        with open(self.car_data_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row['Make'] == team.sponsor:
+                    available_cars.append({
+                        'Model': row['Model'],
+                        'Cost': int(row['Cost']),
+                        'MPG-H': int(row['MPG-H']),
+                        'Ratio': int(row['MPG-H']) / int(row['Cost'])
+                    })
+    
+        #Sort clearly by best efficiency.
+        available_cars.sort(key=lambda x: x['Ratio'], reverse=True)
+    
+        #Attempt to buy exactly one car (clearly enforced).
+        for car in available_cars:
+            if car['Cost'] <= team.budget:
+                print(f"Champion {team.sponsor} is buying {car['Model']} for {car['Cost']} (Remaining budget: {team.budget})")
+                team.inventory.append(car['Model'])
+                team.budget -= car['Cost']
+                return  #**Fix: Ensure only ONE purchase is made.**
+
+
     
     class Team:
         """

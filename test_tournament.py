@@ -328,6 +328,69 @@ def test_purchase_inventory():
 
     print("_purchase_inventory tests passed.")
 
+def test_hold_event():
+    """
+    Test hold_event method to ensure tournament matches run correctly,
+    prizes are allocated, winners buy more cars, and a champion is decided.
+    """
+    print("Running hold_event tests...")
+
+    #Setup fake car data.
+    car_data = [
+        {'Make': 'Tesla', 'Model': 'Model 3', 'Cost': 35000, 'MPG-H': 130},
+        {'Make': 'Ford', 'Model': 'Fusion', 'Cost': 25000, 'MPG-H': 40},
+        {'Make': 'BMW', 'Model': 'i3', 'Cost': 30000, 'MPG-H': 100},
+        {'Make': 'Honda', 'Model': 'Accord', 'Cost': 28000, 'MPG-H': 50},
+    ]
+
+    #Save fake data to csv.
+    fake_car_data_path = './data/cars_modified.csv'
+    with open(fake_car_data_path, 'w') as f:
+        f.write('Make,Model,Cost,MPG-H\n')
+        for car in car_data:
+            f.write(f"{car['Make']},{car['Model']},{car['Cost']},{car['MPG-H']}\n")
+
+    #Setup tournament.
+    tournament = Tournament('./data/config.json')
+
+    #4 teams, each with different sponsors and budgets within bounds.
+    tournament.nteams = 4
+    tournament.generate_sponsors(sponsor_list=['Tesla', 'Ford', 'BMW', 'Honda'], fixed_budget=50000)
+    tournament.generate_teams()
+
+    #Initial buy cars.
+    tournament.buy_cars()
+
+    #Hold event.
+    tournament.hold_event()
+
+    #Check tournament champion.
+    assert tournament.champion is not None, "No champion recorded after tournament."
+    assert tournament.champion.active, "Champion should still be active."
+    assert tournament.champion.performance['wins'] == 2, "Champion should have 2 wins in a 4-team tournament."
+
+    #Calculate how much the champion spent in reality.
+    actual_spent = sum(
+        car['Cost'] * tournament.champion.inventory.count(car['Model'])
+        for car in car_data if car['Make'] == tournament.champion.sponsor
+    )
+    
+    #Expected budget should now account for multiple purchases.
+    total_budget_expected = 50000 + (2 * 50000) - actual_spent
+
+    #Debugging output.
+    print(f"Champion spent: {actual_spent}")
+    print(f"Expected champion budget: {total_budget_expected}")
+    print(f"Actual champion budget: {tournament.champion.budget}")
+        
+    #Print debugging info.
+    print(f"Expected champion budget: {total_budget_expected}")
+    print(f"Actual champion budget: {tournament.champion.budget}")
+
+    assert tournament.champion.budget == total_budget_expected, "Champion budget after tournament incorrect."
+
+    print("hold_event tests passed.")
+
 
 if __name__ == '__main__':
     test_init()
@@ -340,3 +403,4 @@ if __name__ == '__main__':
     test_team_object()
     test_buy_cars()
     test_purchase_inventory()
+    test_hold_event()
