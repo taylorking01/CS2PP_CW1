@@ -3,6 +3,7 @@
 #Description This file contains the Tournament class for managing a bracketstyle car competition. It reads the configuration from a JSON file, loads any relevant attributes, and  manages sponsors, teams, car purchases, and the competition process.
 
 import json
+import random
 
 #Tournament class
 class Tournament:
@@ -41,6 +42,10 @@ class Tournament:
         self.default_high = config['default_high']
         self.default_incr = config['default_incr']
 
+        self.sponsors = []
+        self.budgets = []
+
+
     def __repr__(self):
         """
         Returns an unambiguous str of the Tournament obj.
@@ -52,4 +57,50 @@ class Tournament:
         Returns a readable str of the Tournament obj.
         """
         return f"{self.name} ({self.nteams} teams)"
+
+    def generate_sponsors(self, sponsor_list=None, low=None, high=None, incr=None, fixed_budget=None):
+        """
+        Generates a unique sponsor and budget for each team.
+        
+        :param sponsor_list: Optional list of sponsors to explicitly include.
+        :param low: Lower bound for random budgets (default from config).
+        :param high: Upper bound for random budgets (default from config).
+        :param incr: Increment for budgets (default from config).
+        :param fixed_budget: Optional fixed budget for all teams.
+        :raises AssertionError: If fixed_budget is provided but outside allowed range.
+        """
+        #Use default values if not specified.
+        low = low if low is not None else self.default_low
+        high = high if high is not None else self.default_high
+        incr = incr if incr is not None else self.default_incr
+    
+        available_makers = ['Ford', 'Toyota', 'BMW', 'Honda', 'Tesla', 'Hyundai', 'Chevrolet', 'Volkswagen',
+                            'Audi', 'Nissan', 'Mazda', 'Kia', 'Subaru', 'Mercedes', 'Volvo', 'Jaguar']
+    
+        #Validate fixed_budget.
+        if fixed_budget is not None:
+            assert low <= fixed_budget <= high, "fixed_budget must be within low and high bounds."
+    
+        self.sponsors = []
+        self.budgets = []
+    
+        #Use provided sponsors first.
+        if sponsor_list:
+            assert len(sponsor_list) <= self.nteams, "Sponsor list longer than number of teams."
+            self.sponsors.extend(sponsor_list)
+    
+        #Select remaining sponsors randomly with no duplicates.
+        remaining_makers = list(set(available_makers) - set(self.sponsors))
+        random.shuffle(remaining_makers)
+        while len(self.sponsors) < self.nteams:
+            self.sponsors.append(remaining_makers.pop())
+    
+        #Assign budgets.
+        for _ in range(self.nteams):
+            if fixed_budget is not None:
+                budget = fixed_budget
+            else:
+                budget = random.randrange(low, high + incr, incr)
+            self.budgets.append(budget)
+
 

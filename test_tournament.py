@@ -157,6 +157,43 @@ def test_tournament_repr_str():
 
     print("__repr__ and __str__ methods tests passed.")
 
+def test_generate_sponsors():
+    """
+    Test generate_sponsors method for sponsor selection, budget allocation, handling optional sponsor_list, and fixed_budget.
+    """
+    print("Running generate_sponsors tests...")
+
+    #Setup Tournament obj.
+    tournament = Tournament('./data/config.json')
+
+    #Makes are:
+    available_makers = ['Ford', 'Toyota', 'BMW', 'Honda', 'Tesla', 'Hyundai', 'Chevrolet', 'Volkswagen',
+                        'Audi', 'Nissan', 'Mazda', 'Kia', 'Subaru', 'Mercedes', 'Volvo', 'Jaguar']
+
+    #Test default behaviour.
+    tournament.generate_sponsors()
+    assert len(tournament.sponsors) == tournament.nteams, "Incorrect number of sponsors assigned."
+    assert len(set(tournament.sponsors)) == tournament.nteams, "Duplicate sponsors assigned."
+
+    #Test sponsor_list argument.
+    specific_sponsors = ['Ford', 'Toyota', 'Tesla']
+    tournament.generate_sponsors(sponsor_list=specific_sponsors)
+    assert set(specific_sponsors).issubset(set(tournament.sponsors)), "Specific sponsors not correctly assigned."
+
+    #Test fixed_budget argument within bounds.
+    tournament.generate_sponsors(fixed_budget=30000)
+    assert all(budget == 30000 for budget in tournament.budgets), "Fixed budget incorrectly assigned."
+
+    #Test fixed_budget outside bounds raises AssertionError.
+    try:
+        tournament.generate_sponsors(fixed_budget=99999999)
+        assert False, "AssertionError expected due to invalid fixed_budget but not raised."
+    except AssertionError as e:
+        print("Correctly caught invalid fixed_budget assertion.")
+
+    print("generate_sponsors tests passed.")
+
+
 
 if __name__ == '__main__':
     test_init()
@@ -164,4 +201,5 @@ if __name__ == '__main__':
     test_nteams_positive_nonzero()
     test_nteams_power_of_two()
     test_tournament_repr_str()
+    test_generate_sponsors()
 
