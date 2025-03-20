@@ -1,0 +1,1 @@
+{"car_data_path": "./data/cars_modified.csv", "tournament_name": "Invalid negative number of teams Tournament", "nteams": -8, "default_low": 10000, "default_high": 50000, "default_incr": 5000}
