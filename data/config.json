@@ -1,0 +1,8 @@
+{
+    "car_data_path": "./data/cars_modified.csv",
+    "tournament_name": "The Craziest Championship You Ever Saw 2025",
+    "nteams": 16,
+    "default_low": 10000,
+    "default_high": 50000,
+    "default_incr": 5000
+}
