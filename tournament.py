@@ -44,6 +44,7 @@ class Tournament:
 
         self.sponsors = []
         self.budgets = []
+        self.teams = []
 
 
     def __repr__(self):
@@ -103,4 +104,40 @@ class Tournament:
                 budget = random.randrange(low, high + incr, incr)
             self.budgets.append(budget)
 
+    def generate_teams(self):
+        """
+        Generates Team objects for each sponsor and budget pair. Populates the Tournament's teams attribute.
+        """
+        self.teams = []
+        for sponsor, budget in zip(self.sponsors, self.budgets):
+            team = self.Team(sponsor, budget)
+            self.teams.append(team)
 
+    class Team:
+        """
+        Represents a single competing team with sponsor, budget, inventory, active status, and performance record.
+        """
+        def __init__(self, sponsor, budget):
+            """
+            Initialises a Team object.
+    
+            :param sponsor: The car maker sponsoring this team.
+            :param budget: Initial budget allocated to the team.
+            """
+            self.sponsor = sponsor            #Immutable
+            self.budget = budget              #Mutable (budget changes after car purchases)
+            self.inventory = []               #Mutable (cars are added throughout tournament)
+            self.active = True                #Mutable (changes if eliminated)
+            self.performance = {              #Mutable (updated after matches)
+                'wins': 0,
+                'losses': 0,
+                'scores': [],
+                'cars_used': 0
+            }
+    
+        def __str__(self):
+            """
+            Returns a clear, readable representation of the team.
+            """
+            return f"Team {self.sponsor} | Budget: ${self.budget} | Active: {self.active} | Inventory: {self.inventory}"
+    

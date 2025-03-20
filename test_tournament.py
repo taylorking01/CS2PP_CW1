@@ -193,6 +193,67 @@ def test_generate_sponsors():
 
     print("generate_sponsors tests passed.")
 
+def test_generate_teams():
+    """
+    Test generate_teams method to ensure correct team generation and initialisation based on sponsors and budgets.
+    """
+    print("Running generate_teams tests...")
+
+    #Setup Tournament and generate sponsors first.
+    tournament = Tournament('./data/config.json')
+    tournament.generate_sponsors()
+
+    #Generate teams.
+    tournament.generate_teams()
+
+    #Assert correct number of teams generated.
+    assert len(tournament.teams) == tournament.nteams, "Incorrect number of teams generated."
+
+    #Assert teams have correct sponsors and budgets.
+    for idx, team in enumerate(tournament.teams):
+        assert team.sponsor == tournament.sponsors[idx], "Team sponsor mismatch."
+        assert team.budget == tournament.budgets[idx], "Team budget mismatch."
+        assert team.inventory == [], "Team inventory should initially be empty."
+        assert team.active is True, "Team active status should initially be True."
+        assert team.performance == {'wins': 0, 'losses': 0, 'scores': [], 'cars_used': 0}, "Team performance record mismatch."
+
+    print("generate_teams tests passed.")
+
+def test_team_object():
+    """
+    Test the internal Team class within Tournament for correct attribute assignment, mutability, and string representation.
+    """
+    print("Running internal Team class tests...")
+
+    #Setup a single team object directly.
+    tournament = Tournament('./data/config.json')
+    sponsor = "Tesla"
+    budget = 45000
+    team = tournament.Team(sponsor, budget)
+
+    #Check attributes.
+    assert team.sponsor == sponsor, "Incorrect team sponsor."
+    assert team.budget == budget, "Incorrect team budget."
+    assert team.inventory == [], "Inventory should initially be empty."
+    assert team.active is True, "Active status should initially be True."
+    assert team.performance == {'wins': 0, 'losses': 0, 'scores': [], 'cars_used': 0}, "Incorrect initial performance record."
+
+    #Test mutability.
+    team.inventory.append("Model 3")
+    team.active = False
+    team.performance['wins'] += 1
+    team.performance['scores'].append(120)
+    assert team.inventory == ["Model 3"], "Inventory mutability issue."
+    assert team.active is False, "Active status mutability issue."
+    assert team.performance['wins'] == 1, "Performance record mutability issue."
+    assert team.performance['scores'] == [120], "Performance score mutability issue."
+
+    #Test __str__ representation.
+    expected_str = "Team Tesla | Budget: $45000 | Active: False | Inventory: ['Model 3']"
+    actual_str = str(team)
+    assert actual_str == expected_str, f"__str__ method incorrect. Got: {actual_str}"
+
+    print("Internal Team class tests passed.")
 
 
 if __name__ == '__main__':
@@ -202,4 +263,6 @@ if __name__ == '__main__':
     test_nteams_power_of_two()
     test_tournament_repr_str()
     test_generate_sponsors()
+    test_generate_teams()
+    test_team_object()
 
