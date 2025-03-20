@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column
 )
 
 # from processing import (
@@ -76,20 +76,20 @@ class TestProcessing(unittest.TestCase):
     def test_replace_missing_hp_with_median(self):
         #Test replacing missing HP values with median HP using replace_missing_hp_with_median method.
         data = [
-            {'HP': '300'}, 
+            {'HP': '500'}, 
             {'HP': ''}, 
             {'HP': '100'}
         ]
         result = replace_missing_hp_with_median(data, 'HP')
         expected = [
-            {'HP': '300'},
-            {'HP': '200'},  # median of [100,300] is 200
+            {'HP': '500'},
+            {'HP': '300'},  # median of [500,100] is 300
             {'HP': '100'}
         ]
         self.assertEqual(result, expected)
 
     def test_remove_rows_with_missing_values(self):
-        #Test removing rows with missing values.
+        #Test removing rows with missing values using remove_rows_with_missing_values method.
         data = [
             {'Make': 'Toyota', 'Model': 'Aygo'},
             {'Make': '', 'Model': 'A6'},  #Missing a make
@@ -99,8 +99,18 @@ class TestProcessing(unittest.TestCase):
         expected = [{'Make': 'Toyota', 'Model': 'Aygo'}]
         self.assertEqual(result, expected)
 
-
-
+    def test_add_hp_type_column(self):
+        #Test the addition of HP_Type column based on HP value using add_hp_type_column method.
+        data = [{'HP': '300'}, {'HP': '299'}, {'HP': '301'}]
+        result = add_hp_type_column(data, 'HP')
+        expected = [
+            {'HP': '300', 'HP_Type': 'high'},
+            {'HP': '299', 'HP_Type': 'low'},
+            {'HP': '301', 'HP_Type': 'high'}
+        ]
+        self.assertEqual(result, expected)
+    
+    
 
 
 

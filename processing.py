@@ -93,6 +93,15 @@ def remove_rows_with_missing_values(data: List[Dict[str, str]]) -> List[Dict[str
         row for row in data if all(value.strip() != '' for value in row.values())
     ]
 
+#Add HP_Type column method
+"""
+Adds a new column 'HP_Type' to each row.
+'HP_Type' is 'high' if HP >= 300, otherwise 'low'.
+"""
+def add_hp_type_column(data: List[Dict[str, str]], hp_key: str) -> List[Dict[str, str]]:
+    for row in data:
+        row['HP_Type'] = 'high' if int(row[hp_key]) >= 300 else 'low'
+    return data
 
 
 
