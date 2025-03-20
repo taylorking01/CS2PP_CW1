@@ -121,6 +121,17 @@ def add_price_class_column(data: List[Dict[str, str]], price_key: str) -> List[D
             row['Price_class'] = 'low'
     return data
 
+#Round price values method
+"""
+Rounds the values in the specified Price column to the nearest $100.
+"""
+def round_price(data: List[Dict[str, str]], price_key: str) -> List[Dict[str, str]]:
+    for row in data:
+        price = int(row[price_key])
+        row[price_key] = str(int(round(price, -2)))
+    return data
+
+
 
 
 
