@@ -1,0 +1,8 @@
+{
+    "tournament_name": "Insane roadshow",
+    "car_data_path": "./data/cars_modified.csv",
+    "nteams": 8,
+    "default_low": 15000,
+    "default_high": 60000,
+    "default_incr": 5000
+}

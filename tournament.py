@@ -47,6 +47,28 @@ class Tournament:
         self.budgets = []
         self.teams = []
 
+    def __ge__(self, other):
+        """
+        Compare two Tournament instances based on their champion's performance.
+        
+        :param other: Another Tournament instance.
+        :return: True if self's champion has a higher total MPG-H, False otherwise.
+        """
+        if not isinstance(other, Tournament):
+            raise TypeError("Comparison must be between Tournament instances.")
+
+        #Ensure champions exist before comparison.
+        if self.champion is None or other.champion is None:
+            raise ValueError("Cannot compare tournaments without a champion.")
+    
+        #Calculate total MPG-H for each champion.
+        self_score = self._team_total_mpg(self.champion)
+        other_score = self._team_total_mpg(other.champion)
+
+        print(f"Comparing {self.name} (Score: {self_score}) vs {other.name} (Score: {other_score})")
+
+    
+        return self_score >= other_score
 
     def __repr__(self):
         """
@@ -199,6 +221,10 @@ class Tournament:
         """
         Calculates total MPG-H for all cars in team's inventory.
         """
+        if team is None or not team.inventory:
+            return 0  #Avoids errors when champion has no cars.
+
+        
         total_mpg = 0
         with open(self.car_data_path, 'r') as f:
             reader = csv.DictReader(f)
