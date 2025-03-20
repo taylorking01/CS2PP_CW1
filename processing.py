@@ -185,11 +185,6 @@ def compute_summary(data: List[Dict[str, str]], price_key: str) -> List[Any]:
 
     return [num_rows, num_cols, unique_makes, entries_2009, impala_avg, integra_avg, fewest_midsize_model]
 
-
-
-
-
-
 #Process CSV method.
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:
 
