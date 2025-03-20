@@ -57,8 +57,26 @@ def remove_duplicates(data: List[Dict[str, str]]) -> List[Dict[str, str]]:
             unique_data.append(row)
     return unique_data
 
+#Rename Columns method
+"""
+Renames column headers based on the provided mapping dictionary (renaming_map), 
+where keys are old column names and values are new column names.
+"""
+def rename_columns(data: List[Dict[str, str]], renaming_map: Dict[str, str]) -> List[Dict[str, str]]:
+    renamed_data = []
+    for row in data:
+        renamed_row = {
+            renaming_map.get(key, key): value for key, value in row.items()
+        }
+        renamed_data.append(renamed_row)
+    return renamed_data
 
 
+
+
+
+
+#Process CSV method.
 def process_csv(filepath: str) -> Tuple[List[Any], List[Any]]:
 
     #Prep: Read in the data and compute the summary.

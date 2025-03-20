@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns
 )
 
 # from processing import (
@@ -54,6 +54,27 @@ class TestProcessing(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
 
+    def test_rename_columns(self):
+        # Test the renaming of column headers.
+        data = [
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': 'KTM', 'Model': 'X-bow'}
+        ]
+    
+        renaming_map = {
+            'Make': 'Manufacturer',
+            'Model': 'CarModel'
+        }
+    
+        result = rename_columns(data, renaming_map)
+        expected = [
+            {'Manufacturer': 'Toyota', 'CarModel': 'Aygo'},
+            {'Manufacturer': 'KTM', 'CarModel': 'X-bow'}
+        ]
+        self.assertEqual(result, expected)
+
+
 if __name__ == '__main__':
     unittest.main()
+    test.main()
     
