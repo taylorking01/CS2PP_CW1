@@ -4,6 +4,7 @@
 
 import json
 import random
+import csv
 
 #Tournament class
 class Tournament:
@@ -122,9 +123,34 @@ class Tournament:
 
     def _purchase_inventory(self, team):
         """
-        Placeholder method to handle purchasing cars for a team. Implementation will be provided later.
+        Purchases optimal cars for team based on sponsor, maximising MPG-H within budget using greedy algorithm.
+        Greedy algorithm justification:
+        At each step, select the car with the highest MPG-H per cost ratio, providing a good local optimum.
+        Greedy method is efficient (O(n log n)) and practical for this budget-constrained selection.
+    
+        :param team: The Team object for which inventory is purchased.
         """
-        pass
+        #Load car data clearly from csv file.
+        available_cars = []
+        with open(self.car_data_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row['Make'] == team.sponsor:
+                    available_cars.append({
+                        'Model': row['Model'],
+                        'Cost': int(row['Cost']),
+                        'MPG-H': int(row['MPG-H']),
+                        'Ratio': int(row['MPG-H']) / int(row['Cost']) #Efficiency clearly calculated.
+                    })
+    
+        #Sort cars clearly by MPG-H per cost ratio (descending) greedy criterion.
+        available_cars.sort(key=lambda x: x['Ratio'], reverse=True)
+    
+        #Clear loop to buy cars greedily.
+        for car in available_cars:
+            if car['Cost'] <= team.budget:
+                team.inventory.append(car['Model'])
+                team.budget -= car['Cost'] #Clearly update budget.
     
     class Team:
         """

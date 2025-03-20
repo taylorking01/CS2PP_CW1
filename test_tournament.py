@@ -284,6 +284,50 @@ def test_buy_cars():
 
     print("buy_cars method test passed.")
 
+def test_purchase_inventory():
+    """
+    Test _purchase_inventory method ensuring team purchases optimal set of cars within their budget, maximising MPG-H using a greedy algorithm.
+    """
+    print("Running _purchase_inventory tests...")
+
+    #Setup tournament.
+    tournament = Tournament('./data/config.json')
+
+    #Create a fake car data file clearly.
+    car_data = [
+        {'Make': 'Tesla', 'Model': 'Model S', 'Cost': 40000, 'MPG-H': 120},
+        {'Make': 'Tesla', 'Model': 'Model 3', 'Cost': 35000, 'MPG-H': 130},
+        {'Make': 'Tesla', 'Model': 'Model X', 'Cost': 50000, 'MPG-H': 110},
+        {'Make': 'Ford', 'Model': 'Fusion', 'Cost': 25000, 'MPG-H': 40},
+        {'Make': 'Tesla', 'Model': 'Model Y', 'Cost': 45000, 'MPG-H': 125},
+    ]
+
+    #Save fake data to csv.
+    fake_car_data_path = './data/cars_modified.csv'
+    with open(fake_car_data_path, 'w') as f:
+        f.write('Make,Model,Cost,MPG-H\n')
+        for car in car_data:
+            f.write(f"{car['Make']},{car['Model']},{car['Cost']},{car['MPG-H']}\n")
+
+    #Generate sponsors and teams with a fixed budget of £50,000.
+    tournament.generate_sponsors(sponsor_list=['Tesla'], fixed_budget=50000)
+    tournament.generate_teams()
+    team = tournament.teams[0]
+
+    #Call method.
+    tournament._purchase_inventory(team)
+
+    #Expected greedy outcome within £50,000 budget:
+    #Model 3 (35,000, 130 MPG-H) should be selected since it has the best MPG-H per cost ratio.
+    #Model S (40,000) would exceed budget if bought, so it's skipped.
+    expected_inventory = ['Model 3']
+    expected_budget_left = 50000 - 35000  #Remaining budget should be £15,000.
+
+    assert sorted(team.inventory) == sorted(expected_inventory), "Greedy inventory purchase incorrect."
+    assert team.budget == expected_budget_left, "Team budget not updated correctly."
+
+    print("_purchase_inventory tests passed.")
+
 
 if __name__ == '__main__':
     test_init()
@@ -295,3 +339,4 @@ if __name__ == '__main__':
     test_generate_teams()
     test_team_object()
     test_buy_cars()
+    test_purchase_inventory()
