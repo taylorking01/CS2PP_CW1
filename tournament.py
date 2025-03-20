@@ -40,3 +40,16 @@ class Tournament:
         self.default_low = config['default_low']
         self.default_high = config['default_high']
         self.default_incr = config['default_incr']
+
+    def __repr__(self):
+        """
+        Returns an unambiguous str of the Tournament obj.
+        """
+        return f"Tournament(name='{self.name}', nteams={self.nteams})"
+
+    def __str__(self):
+        """
+        Returns a readable str of the Tournament obj.
+        """
+        return f"{self.name} ({self.nteams} teams)"
+

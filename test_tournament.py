@@ -112,7 +112,7 @@ def test_nteams_power_of_two():
     ]
 
     for config_case in invalid_configs:
-        #.Prepare invalid config data.
+        #Prepare invalid config data.
         invalid_config = {
             "car_data_path": "./data/cars_modified.csv",
             "tournament_name": f"Invalid {config_case['description']} Tournament",
@@ -137,9 +137,31 @@ def test_nteams_power_of_two():
 
     print("nteams power-of-two assertion tests passed.")
 
+def test_tournament_repr_str():
+    """
+    Test the __repr__ and __str__ methods for sensible object representation.
+    """
+    print("Running Tournament object representation tests...")
+
+    tournament = Tournament('./data/config.json')
+
+    #Test __repr__
+    expected_repr = f"Tournament(name='{tournament.name}', nteams={tournament.nteams})"
+    actual_repr = repr(tournament)
+    assert actual_repr == expected_repr, f"__repr__ output incorrect. Got: {actual_repr}"
+
+    #Test __str__
+    expected_str = f"{tournament.name} ({tournament.nteams} teams)"
+    actual_str = str(tournament)
+    assert actual_str == expected_str, f"__str__ output incorrect. Got: {actual_str}"
+
+    print("__repr__ and __str__ methods tests passed.")
+
 
 if __name__ == '__main__':
     test_init()
     test_nteams_integer()
     test_nteams_positive_nonzero()
     test_nteams_power_of_two()
+    test_tournament_repr_str()
+
