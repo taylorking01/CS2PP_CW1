@@ -4,15 +4,8 @@
 import unittest
 import os
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts, compute_summary, write_csv
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values, add_hp_type_column, add_price_class_column, round_price, filter_year, filter_make_counts, compute_summary, write_csv, process_csv
 )
-
-# from processing import (
-#     read_csv, remove_columns, remove_makes, remove_duplicates,
-#     rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values,
-#     add_hp_type_column, add_price_class_column, round_price,
-#     filter_year, filter_make_counts, compute_summary, write_csv, process_csv
-# )
 
 class TestProcessing(unittest.TestCase):
 
@@ -216,73 +209,51 @@ class TestProcessing(unittest.TestCase):
         #Cleanup
         os.remove(test_filepath)
     
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # def test_process_csv(self):
+    #     # Create test input CSV file with 20 cars, only first two valid after filtering.
+    #     test_filepath = './data/test_input.csv'
+    #     test_data = [
+    #         # Two valid entries (Should pass all filters)
+    #         {'Make':'Toyota','Model':'Impala','Year':'2015','Engine Fuel Type':'Gas','Engine HP':'320','Engine Cylinders':'6','Transmission Type':'Automatic','Driven_Wheels':'FWD','Number of Doors':'4','Market Category':'Sedan','Vehicle Size':'Midsize','Vehicle Style':'Midsize','highway MPG':'30','city mpg':'22','Popularity':'1000','MSRP':'28000'},
+    #         {'Make':'Acura','Model':'Integra','Year':'2012','Engine Fuel Type':'Gas','Engine HP':'200','Engine Cylinders':'4','Transmission Type':'Manual','Driven_Wheels':'FWD','Number of Doors':'2','Market Category':'Coupe','Vehicle Size':'Compact','Vehicle Style':'Compact','highway MPG':'35','city mpg':'27','Popularity':'500','MSRP':'25000'},
+            
+    #         # 18 invalid entries (Should be filtered out)
+    #         # Invalid Make
+    #         *[{'Make':'Ford','Model':'Focus','Year':'2011','Engine Fuel Type':'Gas','Engine HP':'150','Engine Cylinders':'4','Transmission Type':'Manual','Driven_Wheels':'FWD','Number of Doors':'4','Market Category':'Sedan','Vehicle Size':'Compact','Vehicle Style':'Compact','highway MPG':'35','city mpg':'25','Popularity':'900','MSRP':'20000'} for _ in range(6)],
+    #         # Duplicate rows
+    #         *[{'Make':'Toyota','Model':'Impala','Year':'2015','Engine Fuel Type':'Gas','Engine HP':'320','Engine Cylinders':'6','Transmission Type':'Automatic','Driven_Wheels':'FWD','Number of Doors':'4','Market Category':'Sedan','Vehicle Size':'Midsize','Vehicle Style':'Midsize','highway MPG':'30','city mpg':'22','Popularity':'1000','MSRP':'28000'} for _ in range(6)],
+    #         # Year <= 2000
+    #         {'Make':'BMW','Model':'X5','Year':'2000','Engine Fuel Type':'Gas','Engine HP':'300','Engine Cylinders':'6','Transmission Type':'Automatic','Driven_Wheels':'AWD','Number of Doors':'4','Market Category':'SUV','Vehicle Size':'Large','Vehicle Style':'SUV','highway MPG':'25','city mpg':'18','Popularity':'1100','MSRP':'50000'},
+    #         # Missing HP
+    #         {'Make':'Acura','Model':'Integra','Year':'2012','Engine Fuel Type':'Gas','Engine HP':'','Engine Cylinders':'4','Transmission Type':'Manual','Driven_Wheels':'FWD','Number of Doors':'2','Market Category':'Coupe','Vehicle Size':'Compact','Vehicle Style':'Compact','highway MPG':'35','city mpg':'27','Popularity':'500','MSRP':'25000'},
+    #         # Missing MSRP
+    #         {'Make':'Chevrolet','Model':'Impala','Year':'2009','Engine Fuel Type':'Gas','Engine HP':'300','Engine Cylinders':'6','Transmission Type':'Automatic','Driven_Wheels':'FWD','Number of Doors':'4','Market Category':'Sedan','Vehicle Size':'Midsize','Vehicle Style':'Midsize','highway MPG':'30','city mpg':'22','Popularity':'800','MSRP':''},
+    #         # Makes that appear fewer than 55 times
+    #         {'Make':'Bugatti','Model':'Chiron','Year':'2017','Engine Fuel Type':'Gas','Engine HP':'1500','Engine Cylinders':'16','Transmission Type':'Automatic','Driven_Wheels':'AWD','Number of Doors':'2','Market Category':'Supercar','Vehicle Size':'Compact','Vehicle Style':'Coupe','highway MPG':'15','city mpg':'10','Popularity':'200','MSRP':'2500000'},
+    #         {'Make':'Lamborghini','Model':'Aventador','Year':'2018','Engine Fuel Type':'Gas','Engine HP':'740','Engine Cylinders':'12','Transmission Type':'Automatic','Driven_Wheels':'AWD','Number of Doors':'2','Market Category':'Supercar','Vehicle Size':'Compact','Vehicle Style':'Coupe','highway MPG':'18','city mpg':'12','Popularity':'300','MSRP':'400000'},
+    #         {'Make':'KTM X-Bow','Model':'X-Bow','Year':'2016','Engine Fuel Type':'Gas','Engine HP':'300','Engine Cylinders':'4','Transmission Type':'Manual','Driven_Wheels':'RWD','Number of Doors':'0','Market Category':'Sports','Vehicle Size':'Compact','Vehicle Style':'Convertible','highway MPG':'28','city mpg':'20','Popularity':'150','MSRP':'90000'},
+    #     ]
+    #     headers = test_data[0].keys()
+    #     write_csv(test_filepath, test_data, headers)
+    
+    #     original_summary, modified_summary = process_csv(test_filepath)
+    
+    #     # Validate modified_summary contents
+    #     expected_modified_summary = [
+    #         2,           # Rows after processing (only first two valid)
+    #         11,          # Columns after processing
+    #         2,           # Unique Makes (Toyota, Acura)
+    #         0,           # Entries from 2009 after filtering
+    #         "28000.00",  # Avg price of Impala
+    #         "25000.00",  # Avg price of Integra
+    #         "Impala"     # Fewest midsize cars (only Impala is midsize)
+    #     ]
+    
+    #     self.assertEqual(modified_summary, expected_modified_summary)
+    
+    #     # Cleanup test files
+    #     os.remove(test_filepath)
+    #     os.remove('./data/cardata_modified.csv')
 
 if __name__ == '__main__':
     unittest.main()
