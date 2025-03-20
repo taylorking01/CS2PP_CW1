@@ -84,6 +84,16 @@ def replace_missing_hp_with_median(data: List[Dict[str, str]], hp_key: str) -> L
             row[hp_key] = str(median_hp)
     return data
 
+#Remove rows with missing values method
+"""
+Removes rows from the dataset if any column in the row contains missing ('') values.
+"""
+def remove_rows_with_missing_values(data: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    return [
+        row for row in data if all(value.strip() != '' for value in row.values())
+    ]
+
+
 
 
 

@@ -3,7 +3,7 @@
 
 import unittest
 from processing import (
-    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median
+    read_csv, remove_columns, remove_makes, remove_duplicates, rename_columns, replace_missing_hp_with_median, remove_rows_with_missing_values
 )
 
 # from processing import (
@@ -87,6 +87,89 @@ class TestProcessing(unittest.TestCase):
             {'HP': '100'}
         ]
         self.assertEqual(result, expected)
+
+    def test_remove_rows_with_missing_values(self):
+        #Test removing rows with missing values.
+        data = [
+            {'Make': 'Toyota', 'Model': 'Aygo'},
+            {'Make': '', 'Model': 'A6'},  #Missing a make
+            {'Make': 'KTM', 'Model': ''}  #Missing a model
+        ]
+        result = remove_rows_with_missing_values(data)
+        expected = [{'Make': 'Toyota', 'Model': 'Aygo'}]
+        self.assertEqual(result, expected)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
