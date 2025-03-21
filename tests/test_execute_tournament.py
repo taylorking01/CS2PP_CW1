@@ -1,6 +1,6 @@
-# File: test_execute_tournament.py
-# Author: Taylor King
-# Description: Tests the full execution of the Tournament class and its methods.
+#File: test_execute_tournament.py
+#Author: Taylor King
+#Description: Tests the full execution of the Tournament class and its methods.
 
 from tournament import Tournament
 
