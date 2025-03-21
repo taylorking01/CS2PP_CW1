@@ -311,4 +311,70 @@ class Tournament:
             Returns a clear, readable representation of the team.
             """
             return f"Team {self.sponsor} | Budget: ${self.budget} | Active: {self.active} | Inventory: {self.inventory}"
-    
+
+class Tournament_optimised(Tournament):
+    """
+    A subclass of Tournament that implements a dynamic programming (unbounded knapsack)
+    approach to select the best combination of cars for a given budget.
+    """
+
+    def _purchase_inventory(self, team):
+        """
+        Uses dynamic programming (Unbounded Knapsack) to select the optimal set of cars 
+        within the budget, maximizing total MPG-H.
+
+        :param team: The Team object for which inventory is purchased.
+        """
+        available_cars = []
+        with open(self.car_data_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row['Make'] == team.sponsor:
+                    available_cars.append({
+                        'Model': row['Model'],
+                        'Cost': int(row['Cost']),
+                        'MPG-H': int(row['MPG-H'])
+                    })
+
+        n = len(available_cars)
+        budget = team.budget
+
+        # dp[i][b] = maximum MPG-H using the first i cars with budget b
+        dp = [[0]*(budget+1) for _ in range(n+1)]
+        # car_selection[i][b] = the actual list of cars that produce dp[i][b]
+        car_selection = [[[] for _ in range(budget+1)] for _ in range(n+1)]
+
+        for i in range(1, n+1):
+            car = available_cars[i-1]
+            cost = car['Cost']
+            mpg = car['MPG-H']
+
+            for b in range(budget+1):
+                # 1) Skip this car
+                skip_val = dp[i-1][b]
+                skip_sel = car_selection[i-1][b]
+
+                # 2) Use this car if cost <= b (unbounded => dp[i][b-cost], not dp[i-1][b-cost])
+                if cost <= b:
+                    take_val = dp[i][b-cost] + mpg
+                    take_sel = car_selection[i][b-cost] + [car]
+                else:
+                    take_val = -1  # invalid
+
+                # Compare skip vs take
+                if skip_val >= take_val:
+                    dp[i][b] = skip_val
+                    car_selection[i][b] = skip_sel
+                else:
+                    dp[i][b] = take_val
+                    car_selection[i][b] = take_sel
+
+        # Reconstruct best selection from dp[n][budget]
+        best_inventory = car_selection[n][budget]
+        team.inventory = [c['Model'] for c in best_inventory]
+
+        # Deduct total cost of all chosen cars
+        total_cost = sum(c['Cost'] for c in best_inventory)
+        team.budget = budget - total_cost
+
+        print(f"DP selected: {team.inventory}, Remaining budget: {team.budget}")
